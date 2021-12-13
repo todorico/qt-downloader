@@ -11,9 +11,12 @@ import subprocess
 import sys
 import urllib.request
 import urllib.parse
+import urllib.error
+
 from ftplib import FTP
 from lxml import etree, html
 from pathlib import Path
+from retry import retry
 
 
 MasterDomain = 'download.qt.io'
@@ -248,6 +251,11 @@ def get_tool_info(url, distr):
   return None
 
  
+@retry(urllib.error.URLError, tries=4, delay=3, backoff=2)
+def try_request_urlopening(request):
+  return urllib.request.urlopen(request)
+
+
 def download_and_extract(title, archives_url, archives, modules, output):
   print('Start installation of {}'.format(title))
 
@@ -257,7 +265,7 @@ def download_and_extract(title, archives_url, archives, modules, output):
       continue
     try:
       print('  Downloading module {}... '.format(module), end='', flush=True)
-      with urllib.request.urlopen(archives_url + archive) as response, open(archive, 'wb') as out_file:
+      with try_request_urlopening(archives_url + archive) as response, open(archive, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
 
       print('\r  Extracting module {}... '.format(module), end='', flush=True)
