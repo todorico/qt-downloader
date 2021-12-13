@@ -264,8 +264,11 @@ def download_and_extract(title, archives_url, archives, modules, output):
     if modules is not None and len(modules) != 0 and (module not in modules):
       continue
     try:
+      header = { 'User-Agent' : 'Mozilla/5.0' }
+      request = urllib.request.Request(archives_url + archive, headers=header)
+      
       print('  Downloading module {}... '.format(module), end='', flush=True)
-      with try_request_urlopening(archives_url + archive) as response, open(archive, 'wb') as out_file:
+      with try_request_urlopening(request) as response, open(archive, 'wb') as out_file:
         shutil.copyfileobj(response, out_file)
 
       print('\r  Extracting module {}... '.format(module), end='', flush=True)
