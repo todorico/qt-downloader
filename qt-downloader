@@ -11,6 +11,7 @@ import sys
 import urllib.request
 import urllib.parse
 import urllib.error
+import pprint
 
 from ftplib import FTP
 from lxml import etree, html
@@ -520,7 +521,11 @@ def main():
     if args.opensource:
       accept_opensource_license(args)
 
-    if len(args.addons) > 0:
+    if len(args.addons) > 0 and args.addons[0] == '*':
+      for name, version, archives in info['addons']:
+        addon_name = name.split('.')[3]
+        download_and_extract(addon_name, url + name + '/' + version, archives, None, args.output)
+    elif len(args.addons) > 0:
       for name, version, archives in info['addons']:
         addon_name = name.split('.')[3]
         if addon_name in args.addons:
