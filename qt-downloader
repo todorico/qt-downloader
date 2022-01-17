@@ -495,6 +495,7 @@ def main():
   parser.add_argument('--openssl', action='store_true', help='Download OpenSSL distribution shipped with Qt')
   parser.add_argument('--mingw', action='store_true', help='Download MinGW distribution shipped with Qt. Relevant for Windows only')
   parser.add_argument('--creator', action='store_true', help='Download QtCreator distribution shipped with Qt')
+  parser.add_argument('--list', '-l', action='store_true', help='list modules and addons informations instead of downloading')
   parser.add_argument('--server', '-s', default=MasterUrl, help='Server URL. Defaults to official master server by the Qt Company. Set to mirror URL to use instead of official servers')
   args = parser.parse_args()
 
@@ -515,20 +516,26 @@ def main():
     if info is None or info['main'] is None:
       sys.exit(1)
 
+    if args.list:
+        _, _, module_archives = info['main']
+        modules = [m.split("-")[0] for m in module_archives]
+        print('  Available modules: {}'.format(', '.join(modules)))
+
+        addons = [name.split('.')[3] for name, _, _ in info["addons"]]
+        print('  Available addons: {}'.format(', '.join(addons)))
+        sys.exit(0)
+
     name, version, archives = info['main']
+
     download_and_extract('Qt', url + name + '/' + version, archives, args.modules, args.output)
     make_relocatable(args)
     if args.opensource:
       accept_opensource_license(args)
 
-    if len(args.addons) > 0 and args.addons[0] == '*':
+    if len(args.addons) > 0:
       for name, version, archives in info['addons']:
         addon_name = name.split('.')[3]
-        download_and_extract(addon_name, url + name + '/' + version, archives, None, args.output)
-    elif len(args.addons) > 0:
-      for name, version, archives in info['addons']:
-        addon_name = name.split('.')[3]
-        if addon_name in args.addons:
+        if args.addons[0] == '*' or addon_name in args.addons:
           download_and_extract(addon_name, url + name + '/' + version, archives, None, args.output)
 
     if args.openssl:
