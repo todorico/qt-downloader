@@ -495,7 +495,7 @@ def main():
   parser.add_argument('--openssl', action='store_true', help='Download OpenSSL distribution shipped with Qt')
   parser.add_argument('--mingw', action='store_true', help='Download MinGW distribution shipped with Qt. Relevant for Windows only')
   parser.add_argument('--creator', action='store_true', help='Download QtCreator distribution shipped with Qt')
-  parser.add_argument('--list', '-l', action='store_true', help='list modules and addons informations instead of downloading')
+  parser.add_argument('--list', '-l', action='store_true', help='List modules and addons information without downloading')
   parser.add_argument('--server', '-s', default=MasterUrl, help='Server URL. Defaults to official master server by the Qt Company. Set to mirror URL to use instead of official servers')
   args = parser.parse_args()
 
