@@ -11,12 +11,10 @@ import sys
 import urllib.request
 import urllib.parse
 import urllib.error
-import pprint
 
 from ftplib import FTP
 from lxml import etree, html
 from pathlib import Path
-from retry import retry
 
 
 MasterDomain = 'download.qt.io'
